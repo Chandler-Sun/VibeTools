@@ -52,7 +52,7 @@ function getWeekStart(d: Date): Date {
 
 function getWeeksInRange(rangeStart: Date, rangeEnd: Date): Date[] {
   const weeks: Date[] = [];
-  let w = getWeekStart(new Date(rangeStart.getTime()));
+  const w = getWeekStart(new Date(rangeStart.getTime()));
   const end = new Date(rangeEnd.getTime());
   while (w <= end) {
     weeks.push(new Date(w.getTime()));
@@ -123,7 +123,12 @@ export default function ProjectScheduleSharePage() {
 
   const baseTasks = useMemo(() => {
     if (!data?.scheduledTasks?.length) return [];
-    return data.scheduledTasks.map(deserializeTask).map(({ computedStart, computedEnd, ...t }) => t as Task);
+    return data.scheduledTasks.map(deserializeTask).map((task): Task => {
+      const baseTask = { ...task };
+      delete baseTask.computedStart;
+      delete baseTask.computedEnd;
+      return baseTask;
+    });
   }, [data]);
 
   const projectStart = useMemo(
@@ -151,7 +156,7 @@ export default function ProjectScheduleSharePage() {
     return { uniqueRoles: unique, roleToColor: map };
   }, [scheduledTasks]);
 
-  const { rangeStart, rangeEnd, rangeMs, weeks, monthSegments, totalWorkDays, totalPersonDays } = useMemo(() => {
+  const { rangeStart, rangeEnd, weeks, monthSegments, totalWorkDays, totalPersonDays } = useMemo(() => {
     const starts = scheduledTasks.map((t) => t.computedStart).filter(Boolean) as Date[];
     const ends = scheduledTasks.map((t) => t.computedEnd).filter(Boolean) as Date[];
     const totalPersonDays = scheduledTasks.reduce((sum, t) => sum + (t.personDays ?? 0), 0);

@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import confetti from 'canvas-confetti';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import styles from './page.module.css';
 
 interface Letter {
   id: number;
@@ -136,7 +135,7 @@ export default function SpaceLetterShooter() {
     }
 
     setLetters(currentLetters => {
-      let workingLetters = [...currentLetters];
+      const workingLetters = [...currentLetters];
       const processedKeys = new Set<string>();
 
       // 1. 处理击中
@@ -202,7 +201,7 @@ export default function SpaceLetterShooter() {
       });
 
       // 2. 移动字母
-      let movedLetters = workingLetters.map(letter => ({
+      const movedLetters = workingLetters.map(letter => ({
         ...letter,
         y: letter.y + letter.speed,
         rotation: letter.rotation + 2,
@@ -227,7 +226,7 @@ export default function SpaceLetterShooter() {
       }
 
       // 4. 过滤掉屏幕外的字母
-      let finalLetters = movedLetters.filter(letter => letter.y < 85);
+      const finalLetters = movedLetters.filter(letter => letter.y < 85);
       
 
 
@@ -499,7 +498,7 @@ export default function SpaceLetterShooter() {
               <p className="text-red-200">💔 错过字母失去生命</p>
               <p className="text-purple-200">🚀 每100分升一级，难度增加</p>
             </div>
-            <p className="mb-2 text-yellow-400 text-sm">💡 点击右上角"选项"可以调节游戏速度</p>
+            <p className="mb-2 text-yellow-400 text-sm">💡 点击右上角&quot;选项&quot;可以调节游戏速度</p>
             <button
               onClick={startGame}
               className="bg-gradient-to-r from-green-500 to-emerald-500 text-white p-3 rounded-xl text-lg hover:from-green-600 hover:to-emerald-600 transition-all transform hover:scale-105 shadow-lg"

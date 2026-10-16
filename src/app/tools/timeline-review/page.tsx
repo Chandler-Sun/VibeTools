@@ -15,7 +15,7 @@ interface DialogConfig {
   message?: string;
   defaultValue?: string;
   fields?: FormField[];
-  onConfirm?: (value?: any) => void;
+  onConfirm?: (value?: string | FormData) => void;
   onCancel?: () => void;
   onDelete?: () => void;
 }
@@ -314,25 +314,6 @@ export default function TimelineReview() {
         onCancel: () => {
           setDialog(null);
           resolve(false);
-        }
-      });
-    });
-  };
-
-  const showPrompt = (title: string, defaultValue: string = '') => {
-    return new Promise<string | null>((resolve) => {
-      setDialogInputValue(defaultValue);
-      setDialog({
-        type: 'prompt',
-        title,
-        defaultValue,
-        onConfirm: (value) => {
-          setDialog(null);
-          resolve(value || null);
-        },
-        onCancel: () => {
-          setDialog(null);
-          resolve(null);
         }
       });
     });
@@ -725,9 +706,6 @@ export default function TimelineReview() {
         const start = timeToCoords(event.startYear, event.startQuarter, yOffset, event.startMonth);
         const end = timeToCoords(event.endYear, event.endQuarter, yOffset, event.endMonth);
         const categoryIcon = getCategoryIcon(event.category);
-        
-        // 检查是否跨年份
-        const isCrossYear = event.startYear !== event.endYear;
         
         // 计算箭头方向（从起点指向终点）
         const dx = end.x - start.x;
@@ -2298,7 +2276,7 @@ export default function TimelineReview() {
         if (data.endYear) setEndYear(data.endYear);
         if (data.yearHeights) setYearHeights(data.yearHeights);
         saveHistory();
-      } catch (e) {
+      } catch {
         await showAlert('导入失败', '文件格式错误，请检查文件内容');
       }
     };
@@ -2484,7 +2462,7 @@ export default function TimelineReview() {
       <div className={styles.instructions}>
         <h3>使用说明：</h3>
         <ul>
-          <li>🎨 选择颜色后，点击"添加里程碑"或"添加持续事件"按钮进入添加模式</li>
+          <li>🎨 选择颜色后，点击&quot;添加里程碑&quot;或&quot;添加持续事件&quot;按钮进入添加模式</li>
           <li>📍 里程碑模式：在画布上单击或拖拽创建里程碑事件</li>
           <li>📊 持续事件模式：在画布上拖拽创建持续事件</li>
           <li>👆 点击已有事件进行选中，然后可在工具栏编辑、标记结果或删除</li>
@@ -2492,12 +2470,12 @@ export default function TimelineReview() {
           <li>↔️ 点击并左右拖拽事件，可移动事件（改变年份和季度）</li>
           <li>📏 对于持续事件，点击并拖拽起点或终点的白色圆点，可调整事件长度</li>
           <li>📏 点击并拖拽年份分割线（横线），可调整该年份区域的高度</li>
-          <li>📝 使用"年度摘要"为特定年份添加总结</li>
-          <li>📍 使用"垂直标注"为时间范围添加阶段标记</li>
+          <li>📝 使用&quot;年度摘要&quot;为特定年份添加总结</li>
+          <li>📍 使用&quot;垂直标注&quot;为时间范围添加阶段标记</li>
           <li>⌨️ 支持 Cmd/Ctrl + Z 撤销，Cmd/Ctrl + Y 重做</li>
           <li>📋 选中事件后，支持 Cmd/Ctrl + C 复制，Cmd/Ctrl + V 粘贴</li>
           <li>💾 数据自动保存到浏览器，也可导出/导入 JSON 文件</li>
-          <li>🤖 点击"AI 复盘"获取智能分析和建议</li>
+          <li>🤖 点击&quot;AI 复盘&quot;获取智能分析和建议</li>
         </ul>
       </div>
 

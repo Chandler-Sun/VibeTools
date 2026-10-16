@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import styles from './page.module.css';
-import { parseScheduleText, type Task, type Priority } from '@/lib/schedule-parser';
+import { parseScheduleText, type Priority } from '@/lib/schedule-parser';
 import { computeSchedule, countWorkDays } from '@/lib/workday-calc';
 import aiService from '@/lib/services/ai_service';
 import {
@@ -47,7 +47,7 @@ function getWeekStart(d: Date): Date {
 /** 从 rangeStart 到 rangeEnd 的周列表（每周一起始） */
 function getWeeksInRange(rangeStart: Date, rangeEnd: Date): Date[] {
   const weeks: Date[] = [];
-  let w = getWeekStart(new Date(rangeStart.getTime()));
+  const w = getWeekStart(new Date(rangeStart.getTime()));
   const end = new Date(rangeEnd.getTime());
   while (w <= end) {
     weeks.push(new Date(w.getTime()));
@@ -169,7 +169,7 @@ export default function ProjectSchedulePage() {
     return { uniqueRoles: unique, roleToColor: map };
   }, [scheduledTasks]);
 
-  const { rangeStart, rangeEnd, rangeMs, weeks, monthSegments, totalWorkDays, totalPersonDays } = useMemo(() => {
+  const { rangeStart, rangeEnd, weeks, monthSegments, totalWorkDays, totalPersonDays } = useMemo(() => {
     const starts = scheduledTasks.map((t) => t.computedStart).filter(Boolean) as Date[];
     const ends = scheduledTasks.map((t) => t.computedEnd).filter(Boolean) as Date[];
     const totalPersonDays = scheduledTasks.reduce((sum, t) => sum + (t.personDays ?? 0), 0);

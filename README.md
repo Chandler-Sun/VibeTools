@@ -54,6 +54,15 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## 当前站点部署：Cloudflare Pages
+
+当前线上站点为 https://kids.belloai.xyz，推送 `main` 后自动发布。
+
+- Node.js 版本由 `.node-version` 固定；依赖按 `pnpm-lock.yaml` 安装。
+- 构建命令可使用 `pnpm run build:pages`，输出目录为 `.vercel/output/static`。
+- 已有的 `npx @cloudflare/next-on-pages@1` 命令也会使用项目内安装的兼容版本。
+- 发布适配器、Wrangler、Workers 类型包与 Vercel CLI 均固定版本，避免临时安装的上游依赖冲突。更新它们时需一起验证 `build:pages`。
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.

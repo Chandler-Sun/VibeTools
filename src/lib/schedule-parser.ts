@@ -22,8 +22,6 @@ export interface Task {
 const RE_TASK_START = /^-\s+/;
 const RE_NOTE_LINE = /^\s+>\s*/;
 const RE_DEPENDENCY = /-->#(\d+)/g;
-const RE_DURATION = /\[(\d+(?:\.\d+)?)d\]/g;
-const RE_PERSON_DAYS = /\[(\d+(?:\.\d+)?)md\]/g;
 const RE_ROLE = /@(\S+)/g;
 
 function parsePriorityAndName(line: string): { priority: Priority; name: string } {

@@ -41,6 +41,10 @@ const fontPaths: {[key: string]: string} = Object.fromEntries(
   FONTS.map(font => [font.id, font.path])
 );
 
+type WeixinWindow = Window & {
+  wx?: { previewImage(options: { current: string; urls: string[] }): void };
+};
+
 const ChineseCalligraphy = () => {
   // 添加状态来追踪组件是否已经挂载
   const [isClient, setIsClient] = React.useState(false);
@@ -64,18 +68,8 @@ const ChineseCalligraphy = () => {
     { name: '赛博朋克', text: '#ff7b00', bg: '#1a1a2e' },
   ];
 
-  // 添加预设的落款文字选项
-  const signatureTexts = [
-    '今日偶感',
-    '茶余饭后',
-    '今日小记',
-    '今日小结',
-    `农历${['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'][Math.floor((new Date().getFullYear() - 4) % 10)]}${['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'][Math.floor((new Date().getFullYear() - 4) % 12)]}年`,
-    `${['一','二','三','四','五','六','七','八','九','十','十一','十二'][new Date().getMonth()]}月${['一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十','二十一','二十二','二十三','二十四','二十五','二十六','二十七','二十八','二十九','三十','三十一'][new Date().getDate()-1]}日`,
-  ];
-
   // 修改检查浏览器环境的函数
-  const getLocalStorage = (key: string, defaultValue: any) => {
+  const getLocalStorage = <T,>(key: string, defaultValue: T): T => {
     if (typeof window === 'undefined') {
       return defaultValue;  // 服务端渲染时始终返回默认值
     }
@@ -83,9 +77,9 @@ const ChineseCalligraphy = () => {
       const stored = localStorage.getItem(key);
       if (stored === null) return defaultValue;
       try {
-        return JSON.parse(stored);
+        return JSON.parse(stored) as T;
       } catch {
-        return stored; // 如果解析失败则返回原始字符串
+        return stored as T; // 如果解析失败则返回原始字符串
       }
     } catch {
       return defaultValue;
@@ -126,24 +120,24 @@ const ChineseCalligraphy = () => {
       setSelectedFont(getLocalStorage('calligraphy_font', selectedFont));
       setTextColor(getLocalStorage('calligraphy_textColor', textColor));
       setBackgroundColor(getLocalStorage('calligraphy_bgColor', bgColor));
-      setTextSize(parseInt(getLocalStorage('calligraphy_textSize', textSize)));
-      setSpacing(parseInt(getLocalStorage('calligraphy_spacing', spacing)));
-      setLetterSpacing(parseFloat(getLocalStorage('calligraphy_letterSpacing', letterSpacing)));
+      setTextSize(parseInt(String(getLocalStorage('calligraphy_textSize', textSize))));
+      setSpacing(parseInt(String(getLocalStorage('calligraphy_spacing', spacing))));
+      setLetterSpacing(parseFloat(String(getLocalStorage('calligraphy_letterSpacing', letterSpacing))));
       setAlignment(getLocalStorage('calligraphy_alignment', alignment));
       setDirection(getLocalStorage('calligraphy_direction', direction));
       setTemplate(getLocalStorage('calligraphy_template', template));
-      setShowSignature(getLocalStorage('calligraphy_showSignature', 'false') === true);
+      setShowSignature(getLocalStorage<boolean>('calligraphy_showSignature', false) === true);
       setSignatureText(getLocalStorage('calligraphy_signatureText', signatureText));
-      setSignatureSize(parseInt(getLocalStorage('calligraphy_signatureSize', signatureSize)));
-      setSignatureOffsetX(parseInt(getLocalStorage('calligraphy_signatureOffsetX', signatureOffsetX)));
-      setSignatureOffsetY(parseInt(getLocalStorage('calligraphy_signatureOffsetY', signatureOffsetY)));
+      setSignatureSize(parseInt(String(getLocalStorage('calligraphy_signatureSize', signatureSize))));
+      setSignatureOffsetX(parseInt(String(getLocalStorage('calligraphy_signatureOffsetX', signatureOffsetX))));
+      setSignatureOffsetY(parseInt(String(getLocalStorage('calligraphy_signatureOffsetY', signatureOffsetY))));
       setShowTitle(getLocalStorage('calligraphy_showTitle', false));
       setTitleText(getLocalStorage('calligraphy_titleText', titleText));
-      setTitleSize(parseInt(getLocalStorage('calligraphy_titleSize', titleSize)));
-      setTitleOffsetX(parseInt(getLocalStorage('calligraphy_titleOffsetX', titleOffsetX)));
-      setTitleOffsetY(parseInt(getLocalStorage('calligraphy_titleOffsetY', titleOffsetY)));
-      setTextOffsetX(parseInt(getLocalStorage('calligraphy_textOffsetX', textOffsetX)));
-      setTextOffsetY(parseInt(getLocalStorage('calligraphy_textOffsetY', textOffsetY)));
+      setTitleSize(parseInt(String(getLocalStorage('calligraphy_titleSize', titleSize))));
+      setTitleOffsetX(parseInt(String(getLocalStorage('calligraphy_titleOffsetX', titleOffsetX))));
+      setTitleOffsetY(parseInt(String(getLocalStorage('calligraphy_titleOffsetY', titleOffsetY))));
+      setTextOffsetX(parseInt(String(getLocalStorage('calligraphy_textOffsetX', textOffsetX))));
+      setTextOffsetY(parseInt(String(getLocalStorage('calligraphy_textOffsetY', textOffsetY))));
     }
   }, []);
 
@@ -1266,9 +1260,10 @@ const ChineseCalligraphy = () => {
                 alt="预览" 
                 className={`w-full md:w-[300px] h-auto object-contain ${isWeixinBrowser ? 'cursor-pointer' : ''}`}
                 onClick={() => {
-                  if (isWeixinBrowser && (window as any).wx) {
+                  const wx = (window as WeixinWindow).wx;
+                  if (isWeixinBrowser && wx) {
                     // 调用微信图片预览
-                    (window as any).wx.previewImage({
+                    wx.previewImage({
                       current: previewUrl,
                       urls: [previewUrl]
                     });
