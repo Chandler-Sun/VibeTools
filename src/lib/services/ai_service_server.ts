@@ -51,7 +51,7 @@ function getChatCompletionsEndpoint(): string {
   return getBaseUrl() + '/chat/completions' + getQueryString();
 }
 
-export async function chatCompletion(options: OpenRouterRequestOptions): Promise<OpenRouterResponse> {
+export async function chatCompletion(options: OpenRouterRequestOptions, signal?: AbortSignal): Promise<OpenRouterResponse> {
   const apiKey = getApiKey();
   if (!apiKey) {
     throw new Error('OPENROUTER_API_KEY 未配置');
@@ -78,13 +78,8 @@ export async function chatCompletion(options: OpenRouterRequestOptions): Promise
       'X-Title': 'GamesForKids',
     },
     body: JSON.stringify(requestOptions),
+    signal,
   });
-  console.log({
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${apiKey}`,
-    'HTTP-Referer': process.env.NEXT_PUBLIC_APP_ORIGIN || 'https://gamesforkids.app',
-    'X-Title': 'GamesForKids',
-  })
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);

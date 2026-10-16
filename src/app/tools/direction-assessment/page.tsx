@@ -6,6 +6,8 @@ import { ArrowLeft, ArrowRight, Check, CheckCircle2, Compass, Download, History,
 import { Direction, indexScore, INDICES, initialWorkspace, newDirection, parseWorkspace, PLAN_FIELDS, REFLECTIONS } from '@/lib/direction-explorer';
 import { ASSESSMENT_STEPS, ASSESSMENT_STORAGE_KEY, AssessmentState, assessmentObservations, canContinue, EXPLORER_STORAGE_KEY, finishAssessment, initialAssessment, mergeIntoExplorer, parseAssessment, RESULT_STEP } from '@/lib/direction-assessment';
 import styles from './page.module.css';
+import WeekAIPrefill from '@/components/WeekAIPrefill';
+import { applyGeneratedWeek } from '@/lib/direction-week';
 
 function download(text: string, filename: string) {
   const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
@@ -123,7 +125,7 @@ export default function DirectionAssessmentPage() {
               <p className={styles.stepHint} aria-live="polite">本步已填写 {answered} / {current.dimensions.length} 项{answered < current.dimensions.length ? '，全部选择后可继续。' : '，可以继续。'}</p>
             </>}
             {current.id === 'motivation' && <div className={styles.writingCard}>{noteFields(REFLECTIONS)}</div>}
-            {current.id === 'daily' && <div className={styles.writingCard}><p className={styles.example}>例如，硬件的一周可能是找结构工程师、谈模具、拍素材、处理售后；数据产品可能是找数据源、清洗、建模和客户访谈。</p>{WEEK.map((day, i) => <label className={styles.dayRow} key={day}><span>{day}</span><textarea rows={2} maxLength={10000} aria-label={`${day}的日常工作`} placeholder="上午 10 点，我在做什么？" value={direction.week[i]} onChange={e => { const week = [...direction.week]; week[i] = e.target.value; edit({ week }); }} /></label>)}<h2 className={styles.dailyTitle}>我有多愿意长期过这样的生活？</h2>{renderScore('dailyScore', '日常生活意愿', direction.dailyScore, n => edit({ dailyScore: n }))}<p className={styles.stepHint}>这项分数单独呈现，不计入四项指数。</p></div>}
+            {current.id === 'daily' && <div className={styles.writingCard}><WeekAIPrefill source={direction} week={direction.week} onApply={(source, week, mode) => update(s => ({ ...s, direction: applyGeneratedWeek(s.direction, source, week, mode) }))} /><p className={styles.example}>例如，硬件的一周可能是找结构工程师、谈模具、拍素材、处理售后；数据产品可能是找数据源、清洗、建模和客户访谈。</p>{WEEK.map((day, i) => <label className={styles.dayRow} key={day}><span>{day}</span><textarea rows={2} maxLength={10000} aria-label={`${day}的日常工作`} placeholder="上午 10 点，我在做什么？" value={direction.week[i]} onChange={e => { const week = [...direction.week]; week[i] = e.target.value; edit({ week }); }} /></label>)}<h2 className={styles.dailyTitle}>我有多愿意长期过这样的生活？</h2>{renderScore('dailyScore', '日常生活意愿', direction.dailyScore, n => edit({ dailyScore: n }))}<p className={styles.stepHint}>这项分数单独呈现，不计入四项指数。</p></div>}
             {current.id === 'plan' && <div className={styles.writingCard}>{noteFields(PLAN_FIELDS.filter(f => MAIN_PLAN_IDS.includes(f.id)))}<details className={styles.morePlan}><summary>补充趋势、启动路径与真实反馈（选填）</summary>{noteFields(PLAN_FIELDS.filter(f => !MAIN_PLAN_IDS.includes(f.id)))}</details></div>}
           </section>
           <div className={styles.navigation}><button type="button" className={styles.previous} disabled={step === 0} onClick={() => update(s => ({ ...s, step: s.step - 1 }))}><ArrowLeft size={17} /> 上一步</button><div>{current.optional && <span>可以留空继续</span>}<button type="submit" className={styles.primary} disabled={!canContinue(direction, step)}>{step === 0 ? '开始评估' : step === RESULT_STEP - 1 ? '生成评估结果' : '下一步'}<ArrowRight size={17} /></button></div></div>
@@ -140,7 +142,7 @@ export default function DirectionAssessmentPage() {
         <div className={styles.resultActions}><button type="button" className={styles.primary} onClick={addToPool}>{addedToPool ? <Check size={17} /> : <Save size={17} />}{addedToPool ? '已加入方向池' : '加入方向池，继续对比'}</button><button type="button" className={styles.secondary} onClick={exportResult}><Download size={17} /> 导出结果</button><button type="button" className={styles.secondary} onClick={startNew}><Plus size={17} /> 评估另一个方向</button></div>
         <Link href="/tools/direction-explorer" className={styles.secondaryLink}>前往方向探索工作台 <ArrowRight size={15} /></Link>
       </section>}
-      <footer className={styles.footer}><span>先诚实地回答，再允许答案改变。</span><span>仅保存在当前浏览器 · 不上传填写内容</span></footer>
+      <footer className={styles.footer}><span>先诚实地回答，再允许答案改变。</span><span>评分与笔记保存在当前浏览器 · AI 预填仅发送方向名称与描述</span></footer>
     </div>
   </main>;
 }

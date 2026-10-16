@@ -1,0 +1,20 @@
+.panel { margin: 22px 0; padding: 17px 18px; background: #f0f8fd; border: 1px solid #d2e5f2; border-radius: 12px; color: #395c75; }
+.heading { display: flex; align-items: flex-start; gap: 17px; justify-content: space-between; }
+.heading > div { min-width: 0; }
+.heading strong { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: #357da4; }
+.heading p { font-size: 11px; line-height: 1.9; margin-top: 9px; color: #607f95; }
+.panel button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; font-size: 12px; min-height: 44px; padding: 10px 13px; border: 1px solid #b5d5e8; border-radius: 8px; background: #fff; color: #347797; cursor: pointer; }
+.panel button:disabled { opacity: .5; cursor: not-allowed; }
+.panel button:focus-visible, .preview summary:focus-visible { outline: 3px solid #7dd3fc; outline-offset: 3px; }
+.heading .generate { flex-shrink: 0; color: #fff; background: #2189ba; border-color: #2189ba; white-space: nowrap; }
+.status { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; line-height: 1.8; margin-top: 12px; }
+.status button { background: transparent; border: 0; padding: 7px; white-space: nowrap; }
+.error { font-size: 12px; line-height: 1.8; color: #a34d3e; margin: 12px 0 0; }
+.notice { font-size: 12px; line-height: 1.8; color: #3c7d76; margin: 12px 0 0; }
+.preview { border-top: 1px solid #d5e6f1; padding-top: 10px; margin-top: 13px; }
+.preview summary { min-height: 40px; font-size: 12px; padding: 9px 0; color: #4b83a4; cursor: pointer; }
+.preview > div > p { display: flex; align-items: flex-start; gap: 12px; font-size: 12px; line-height: 1.9; margin: 13px 0; }
+.preview p strong { white-space: nowrap; font-weight: 600; }
+.preview p span { white-space: pre-wrap; overflow-wrap: anywhere; }
+.applyActions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 15px; }
+@media (max-width: 560px) { .panel { padding: 16px 14px; } .heading { flex-direction: column; gap: 13px; } .heading .generate { width: 100%; min-height: 46px; font-size: 14px; } .heading p { font-size: 12px; } .status { align-items: flex-start; } .preview > div > p { font-size: 13px; } .applyActions { flex-direction: column; } .applyActions button { width: 100%; min-height: 46px; } }
