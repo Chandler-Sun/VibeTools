@@ -12,14 +12,14 @@ function compile(relative, dependencies = {}) {
   m._compile(ts.transpileModule(fs.readFileSync(filename, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } }).outputText, filename);
   return m.exports;
 }
-const { validateWeek, parseGeneratedWeek, applyGeneratedWeek } = compile('src/lib/direction-week.ts');
+const { validateWeek, parseGeneratedWeek, applyGeneratedWeek, weekCompletionRequest } = compile('src/lib/direction-week.ts');
 const { newDirection } = compile('src/lib/direction-explorer.ts');
 const week = ['研究数据源与清洗', '整理行业模型', '访谈潜在客户', '交付一次样例', '处理反馈与重复任务'];
 function makeRoute(chatCompletion) {
   return compile('src/app/api/ai/simulate-week/route.ts', {
     'next/server': { NextResponse: { json: (body, init = {}) => new Response(JSON.stringify(body), { ...init, headers: { 'Content-Type': 'application/json' } }) } },
     '@/lib/services/ai_service_server': { chatCompletion },
-    '@/lib/direction-week': { parseGeneratedWeek },
+    '@/lib/direction-week': { parseGeneratedWeek, weekCompletionRequest },
   }).POST;
 }
 function request(body) { return new Request('http://localhost/api/ai/simulate-week', { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' } }); }
