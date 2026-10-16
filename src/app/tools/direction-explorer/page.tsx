@@ -110,6 +110,7 @@ export default function DirectionExplorer() {
       <section className={styles.hero}>
         <div><p className={styles.eyebrow}>A LITTLE CLOSER TO WHAT YOU WANT</p><h1>下一步，想走向哪里<span>？</span></h1><p className={styles.heroText}>把「想做」和「适合做」分别看清。给每个方向一点诚实的时间。</p></div>
         <div className={styles.actions}>
+          <Link href="/tools/direction-assessment" className={styles.wizardLink}><Compass size={16} /> 逐步评估一个方向</Link>
           <button onClick={() => setShowHistory(v => !v)}><History size={16} /> 历史快照{workspace.snapshots.length > 0 && ` · ${workspace.snapshots.length}`}</button>
           <button onClick={() => fileInput.current?.click()}><Upload size={16} /> 导入</button>
           <button onClick={() => download(JSON.stringify(workspace, null, 2), '方向探索备份.json', 'application/json')}><Download size={16} /> 备份</button>

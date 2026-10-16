@@ -8,6 +8,7 @@ const GamesDirectory = () => {
       { id: 'space-letter-shooter', title: '太空飞船打字母', description: '射击掉落的字母，练习键盘输入' },
     ],
     tools: [
+      { id: 'direction-assessment', title: '方向评估向导', description: '一次评估一个方向，逐步填写内心与现实评分，最后获得评估结果和验证建议，手机也能轻松填写' },
       { id: 'direction-explorer', title: '方向探索工作台', description: '评估内心吸引力与现实适配度，对比创业方向，记录动机与验证计划，自动保存进度' },
       { id: 'chinese-calligraphy', title: '文字转图片', description: '将文字转换为书法字体图片' },
       { id: 'timeline-review', title: '时间线复盘工具', description: '基于年度时间线的可视化复盘工具，支持AI分析' },

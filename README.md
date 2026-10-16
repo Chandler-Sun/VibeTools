@@ -8,7 +8,9 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 - 📅 **时间线复盘工具**: 带 AI 智能分析的可视化复盘工具
 - 🧭 **方向探索工作台**: `/tools/direction-explorer`，预置 16 个创业方向，支持 30 维自评、四项独立指数、动机追问、日常模拟、验证计划和方向对比。自动保存到当前浏览器，支持 JSON 备份 / 导入、CSV 导出及最多 30 个历史快照。跨设备需手动导入备份，未接入云端同步。
 
-方向探索的评分与备份校验测试：`node --test test/direction-explorer/model.test.cjs`。
+方向探索与评估向导的评分、进度恢复和备份校验测试：`node --test test/direction-explorer/*.test.cjs`。
+
+方向评估向导：`/tools/direction-assessment`。先定义一个方向，按步骤完成 30 项评分，再补充动机、日常和验证计划，最后查看四项独立指数及观察建议。支持手机、自动恢复草稿、最近 30 个已完成评估、导出结果和加入方向探索工作台继续对比。记录仅保存在当前浏览器。
 
 ## 🤖 AI 功能
 
