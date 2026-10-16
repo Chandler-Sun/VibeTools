@@ -1,6 +1,6 @@
-/**
- * 前端 AI 服务客户端：仅调用后端 /api/ai/*，不包含提示词与 API Key。
- */
+import { readAISettings } from '../ai-settings';
+import { browserChatCompletion } from './ai-browser';
+import { timelineCompletionRequest, scheduleCompletionRequest, type AnalyzeTimelineParams } from './ai-prompts';
 
 export interface OpenRouterMessage {
   role: 'user' | 'assistant' | 'system';
@@ -27,78 +27,34 @@ export interface OpenRouterResponse {
   }[];
 }
 
-const API_BASE = '/api/ai';
-
-async function post<T>(path: string, body: unknown): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-
-  const data = await res.json().catch(() => ({}));
-
-  if (!res.ok) {
-    const message = (data && typeof data.error === 'string' ? data.error : res.statusText) || `HTTP ${res.status}`;
-    throw new Error(message);
-  }
-
-  return data as T;
+/** All browser AI features share the same local credentials and direct provider connection. */
+export async function chatCompletion(options: OpenRouterRequestOptions, signal?: AbortSignal): Promise<OpenRouterResponse> {
+  let settings;
+  try { settings = readAISettings(localStorage); }
+  catch { throw new Error('无法读取公共 AI 配置，请前往 AI 设置重新保存。'); }
+  if (!settings) throw new Error('请先在公共 AI 设置中保存 OpenRouter API Key。');
+  const controller = new AbortController();
+  const cancel = () => controller.abort();
+  signal?.addEventListener('abort', cancel, { once: true });
+  if (signal?.aborted) controller.abort();
+  const timeout = setTimeout(cancel, 120000);
+  try { return await browserChatCompletion(settings, options, controller.signal); }
+  catch (error) {
+    if (controller.signal.aborted) throw new Error('AI 请求超时或已取消，请稍后重试。');
+    throw error;
+  } finally { clearTimeout(timeout); signal?.removeEventListener('abort', cancel); }
 }
 
-/**
- * 通用聊天补全（请求转发到后端，由后端调用 OpenRouter）。
- */
-export async function chatCompletion(options: OpenRouterRequestOptions): Promise<OpenRouterResponse> {
-  return post<OpenRouterResponse>('/chat-completion', {
-    messages: options.messages,
-    temperature: options.temperature,
-    max_tokens: options.max_tokens,
-    model: options.model,
-  });
+export async function analyzeTimeline(params: AnalyzeTimelineParams): Promise<string> {
+  const response = await chatCompletion(timelineCompletionRequest(params));
+  return response.choices[0].message.content;
 }
 
-/**
- * 时间线复盘分析（提示词与密钥在后端）。
- */
-export async function analyzeTimeline(params: {
-  events: Array<{
-    title: string;
-    startYear: number;
-    startQuarter?: number;
-    startMonth?: number;
-    endYear?: number;
-    endQuarter?: number;
-    endMonth?: number;
-    type: string;
-    category: string;
-    result?: string;
-    notes?: string;
-  }>;
-  yearSummaries?: Array<{ year: number; text: string }>;
-  startYear: number;
-  endYear: number;
-}): Promise<string> {
-  const { content } = await post<{ content: string }>('/analyze-timeline', params);
-  return content ?? '';
-}
-
-/**
- * 根据用户需求调整排期计划（提示词与密钥在后端）。
- */
 export async function adjustSchedulePlan(currentMarkdown: string, userRequest: string): Promise<string> {
-  const { content } = await post<{ content: string }>('/adjust-schedule', {
-    currentMarkdown,
-    userRequest,
-  });
-  return content ?? '';
+  const response = await chatCompletion(scheduleCompletionRequest(currentMarkdown, userRequest));
+  return response.choices[0].message.content.trim();
 }
 
-// 兼容原有 default 导出：单例对象，方法与上面一致
-const aiService = {
-  chatCompletion,
-  analyzeTimeline,
-  adjustSchedulePlan,
-};
-
+export type { AnalyzeTimelineParams } from './ai-prompts';
+const aiService = { chatCompletion, analyzeTimeline, adjustSchedulePlan };
 export default aiService;

@@ -25,6 +25,7 @@ const GamesDirectory = () => {
           <div className="max-w-md mx-auto">
             <div>
               <h1 className="text-2xl font-semibold">AI 生成的小应用</h1>
+              <Link href="/settings/ai" className="mt-3 inline-flex min-h-11 items-center text-sm text-cyan-700 underline underline-offset-4">公共 AI 设置 · 所有工具共用</Link>
             </div>
             <div className="divide-y divide-gray-200">
               {Object.entries(items).map(([category, categoryItems]) => (

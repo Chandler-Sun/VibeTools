@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import aiService from '@/lib/services/ai_service';
 
@@ -7,7 +8,7 @@ export default function AITestPage() {
   const [testResult, setTestResult] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // 测试基础聊天（通过后端 /api/ai 调用，密钥不暴露在前端）
+  // 测试基础聊天（共用浏览器本地 AI 配置）
   const testBasicChat = async () => {
     setIsLoading(true);
     setTestResult('🔄 正在测试基础聊天功能...');
@@ -28,7 +29,7 @@ export default function AITestPage() {
       setTestResult(`✅ 测试成功！\n\nAI 回复：\n${content}`);
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
-      setTestResult(`❌ 测试失败：\n${msg}\n\n若提示「AI 服务未配置」，请在服务端 .env.local 中配置 OPENROUTER_API_KEY。`);
+      setTestResult(`❌ 测试失败：\n${msg}\n\n请在公共 AI 设置中检查密钥、模型和账户额度。`);
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +97,7 @@ export default function AITestPage() {
       setTestResult(`✅ 测试成功！\n\n时间线分析结果：\n\n${insights}`);
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
-      setTestResult(`❌ 测试失败：\n${msg}\n\n若提示「AI 服务未配置」，请在服务端 .env.local 中配置 OPENROUTER_API_KEY。`);
+      setTestResult(`❌ 测试失败：\n${msg}\n\n请在公共 AI 设置中检查密钥、模型和账户额度。`);
     } finally {
       setIsLoading(false);
     }
@@ -111,7 +112,7 @@ export default function AITestPage() {
     }}>
       <h1 style={{ fontSize: '32px', marginBottom: '10px' }}>🧪 AI 服务测试</h1>
       <p style={{ color: '#666', marginBottom: '30px' }}>
-        AI 请求通过后端 /api/ai 转发，密钥与提示词仅保存在服务端，不会暴露在前端。
+        所有工具共用浏览器本地 AI 配置，浏览器直接连接 OpenRouter。
       </p>
 
       {/* 测试按钮 */}
@@ -189,11 +190,11 @@ export default function AITestPage() {
       }}>
         <h3 style={{ marginTop: 0 }}>📚 使用说明</h3>
         <ul style={{ marginBottom: 0, lineHeight: '1.8' }}>
-          <li><strong>基础聊天测试</strong>：验证后端 AI 接口是否正常</li>
+          <li><strong>基础聊天测试</strong>：验证公共 AI 配置是否可用</li>
           <li><strong>时间线分析测试</strong>：测试时间线复盘功能（用于 /tools/timeline-review）</li>
         </ul>
         <p style={{ marginTop: '15px', marginBottom: 0, fontSize: '14px' }}>
-          💡 服务端需在 .env.local 中配置 <code>OPENROUTER_API_KEY</code>（无需 NEXT_PUBLIC_ 前缀，仅服务端使用）。
+          <Link href="/settings/ai" className="text-blue-700 underline">前往公共 AI 设置</Link>，保存当前浏览器使用的密钥与模型。
         </p>
       </div>
     </div>

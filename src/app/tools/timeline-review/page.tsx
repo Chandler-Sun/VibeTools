@@ -1737,33 +1737,6 @@ export default function TimelineReview() {
     setIsAnalyzing(true);
     
     try {
-      // 检查是否配置了 API Key
-      const apiKey = process.env.NEXT_PUBLIC_OPENROUTER_API_KEY;
-      if (!apiKey) {
-        const fallbackInsights = `
-📊 时间线复盘分析报告
-
-⚠️ 未配置 OpenRouter API Key，显示基础统计信息
-
-一、整体趋势
-• 在 ${startYear}-${endYear} 期间，共记录了 ${events.length} 个重要事件
-• 成功事件：${events.filter(e => e.result === 'good').length} 个
-• 遇挫事件：${events.filter(e => e.result === 'bad').length} 个
-• 中性事件：${events.filter(e => e.result === 'neutral' || !e.result).length} 个
-
-二、关键洞察
-• 事件密集期：${getMostBusyYear()} 是最繁忙的一年
-• 里程碑事件：${events.filter(e => e.type === 'milestone').length} 个
-• 持续事件：${events.filter(e => e.type === 'duration').length} 个
-
-💡 提示：配置 NEXT_PUBLIC_OPENROUTER_API_KEY 环境变量以启用 AI 深度分析功能。
-        `;
-        
-        setAiInsights(fallbackInsights.trim());
-        setIsAnalyzing(false);
-        return;
-      }
-
       // 调用真实的 AI 服务
       const insights = await aiService.analyzeTimeline({
         events: events.map(e => ({
